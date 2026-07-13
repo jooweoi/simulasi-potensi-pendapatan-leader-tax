@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Estimasi Komisi Leader</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <main class="layar lebar">
+    <section class="kepala">
+      <div>
+        <h1>Estimasi Komisi Leader</h1>
+        <p class="subjudul">Komisi dihitung berdasarkan pendapatan per user dan selisih ranking.</p>
+      </div>
+      <div class="aksi-header">
+        <form action="{{ url_for('leader') }}" method="post">
+          {% for key, value in hidden.items() %}
+            <input type="hidden" name="{{ key }}" value="{{ value }}">
+          {% endfor %}
+          {% for key, value in leader_hidden.items() %}
+            <input type="hidden" name="{{ key }}" value="{{ value }}">
+          {% endfor %}
+          <button class="tombol-header" type="submit">Hitung Semula</button>
+        </form>
+        <a class="tombol-tautan" href="{{ url_for('index') }}">Ubah Simulasi</a>
+      </div>
+    </section>
+
+    <section class="ringkasan">
+      <article class="metrik utama">
+        <span>Total Komisi Leader</span>
+        <strong>{{ "{:,.2f}".format(leader.total_komisi_leader) }}</strong>
+      </article>
+      <article class="metrik">
+        <span>Total Pendapatan Member</span>
+        <strong>{{ "{:,.2f}".format(leader.total_pendapatan_member) }}</strong>
+      </article>
+      <article class="metrik">
+        <span>Total Active User</span>
+        <strong>{{ leader.total_active_user }}</strong>
+      </article>
+      <article class="metrik">
+        <span>Status</span>
+        <strong class="{% if leader.status != 'OK' %}teks-merah{% endif %}">{{ leader.status }}</strong>
+      </article>
+    </section>
+
+    <section class="kartu fakta">
+      <div><span>Leader Name</span><b>{{ leader.leader_name }}</b></div>
+      <div><span>Leader Ranking</span><b>{{ leader.leader_ranking }}</b></div>
+      <div><span>Leader %</span><b>{{ "{:.0f}%".format(leader.leader_percent * 100) }}</b></div>
+      <div><span>Jumlah Member Level 1</span><b>{{ leader.jumlah_member_level_1 }}</b></div>
+      <div><span>Total Pembelian</span><b>{{ "{:,.2f}".format(simulation.total_pembelian) }}</b></div>
+      <div><span>Estimasi Pendapatan</span><b>{{ "{:,.2f}".format(simulation.total_pendapatan) }}</b></div>
+    </section>
+
+    <section class="bungkus-tabel">
+      <table>
+        <thead>
+          <tr>
+            <th>Bulan</th>
+            <th>Tanggal</th>
+            <th>Pendapatan / User</th>
+            <th>Total Active User</th>
+            <th>Total Pendapatan Member</th>
+            <th>Komisi Leader</th>
+            <th>Keterangan</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in leader.rows %}
+            <tr>
+              <td>{{ row.bulan }}</td>
+              <td>{{ row.tanggal }}</td>
+              <td>{{ "{:,.2f}".format(row.pendapatan_per_user) if row.pendapatan_per_user else "" }}</td>
+              <td>{{ row.total_active_user }}</td>
+              <td>{{ "{:,.2f}".format(row.total_pendapatan_member) if row.total_pendapatan_member else "" }}</td>
+              <td>{{ "{:,.2f}".format(row.komisi_leader) if row.komisi_leader else "" }}</td>
+              <td>{{ row.keterangan }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+
+    <section class="bungkus-tabel jarak-atas">
+      <table>
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Member Name</th>
+            <th>Member Ranking</th>
+            <th>Total Active User</th>
+            <th>Rank %</th>
+            <th>Selisih %</th>
+            <th>Komisi Leader</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for member in leader.member_details %}
+            {% if member.status != "Tidak Aktif" %}
+              <tr>
+                <td>{{ member.no }}</td>
+                <td>{{ member.name }}</td>
+                <td>{{ member.ranking }}</td>
+                <td>{{ member.active_user }}</td>
+                <td>{{ "{:.0f}%".format(member.rank_percent * 100) }}</td>
+                <td>{{ "{:.0f}%".format(member.selisih_percent * 100) }}</td>
+                <td>{{ "{:,.2f}".format(member.komisi_leader) if member.komisi_leader else "" }}</td>
+              </tr>
+            {% endif %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+  </main>
+</body>
+</html>

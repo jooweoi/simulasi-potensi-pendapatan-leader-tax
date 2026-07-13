@@ -1,0 +1,8 @@
+services:
+  - type: web
+    name: simulasi-potensi-pendapatan-leader-tax
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    autoDeploy: true

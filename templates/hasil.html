@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Estimasi Hasil Simulasi</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <main class="layar lebar">
+    <section class="kepala">
+      <div>
+        <h1>Estimasi Hasil Simulasi</h1>
+        <p class="subjudul">{{ result.rentang_simulasi }}</p>
+      </div>
+      <div class="aksi-header">
+        <a class="tombol-tautan" href="{{ url_for('index') }}">Ubah Simulasi</a>
+        <form action="{{ url_for('leader') }}" method="post">
+          {% for key, value in hidden.items() %}
+            <input type="hidden" name="{{ key }}" value="{{ value }}">
+          {% endfor %}
+          <button class="tombol-header" type="submit">Komisi Leader</button>
+        </form>
+      </div>
+    </section>
+
+    <section class="ringkasan">
+      <article class="metrik utama">
+        <span>Estimasi Pendapatan</span>
+        <strong>{{ "{:,.2f}".format(result.total_pendapatan) }}</strong>
+      </article>
+      <article class="metrik">
+        <span>Persentase Keuntungan</span>
+        <strong>{{ "{:.2f}%".format(result.kelipatan_pendapatan * 100) }}</strong>
+      </article>
+      <article class="metrik">
+        <span>Total Nilai Pembelian</span>
+        <strong>{{ "{:,.2f}".format(result.total_pembelian) }}</strong>
+      </article>
+      <article class="metrik">
+        <span>Status Simulasi</span>
+        <strong class="{% if result.status == 'Pembelian awal belum memenuhi syarat minimum/Silakan tingkatkan pembelian awal sesuai nominal minimum' %}teks-merah{% endif %}">{{ result.status }}</strong>
+      </article>
+    </section>
+
+    <section class="kartu fakta">
+      <div><span>Pilih Paket</span><b>{{ result.paket }}</b></div>
+      <div><span>Frekuensi Pembelian Ulang</span><b>{{ result.durasi_beli_ulang }}</b></div>
+      <div><span>Hitung Sampai Pencairan Terakhir</span><b>{{ result.bulan_pencairan_terakhir }}</b></div>
+      <div><span>Tanggal Mulai Pencairan</span><b>{{ result.tanggal_mulai_pencairan }}</b></div>
+      <div><span>Tanggal Pencairan Terakhir</span><b>{{ result.tanggal_pencairan_terakhir }}</b></div>
+      <div><span>Total Nilai Pembelian Tambahan</span><b>{{ "{:,.2f}".format(result.total_pembelian_tambahan) }}</b></div>
+      <div><span>Total Beli Ulang Diproses</span><b>{{ "{:,.2f}".format(result.total_beli_ulang_diproses) }}</b></div>
+      <div><span>Total Pajak 6%</span><b>{{ "{:,.2f}".format(result.total_pajak) }}</b></div>
+    </section>
+
+    <section class="bungkus-tabel">
+      <table>
+        <thead>
+          <tr>
+            <th>Bulan</th>
+            <th>Tanggal</th>
+            <th>Pendapatan Diterima</th>
+            <th>Penarikan Bulanan</th>
+            <th>Pembelian Tambahan</th>
+            <th>Beli Ulang Diproses</th>
+            <th>Estimasi Pendapatan</th>
+            <th>Keterangan</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in result.rows %}
+            <tr>
+              <td>{{ row.bulan }}</td>
+              <td>{{ row.tanggal }}</td>
+              <td>{{ "{:,.2f}".format(row.pendapatan_diterima) if row.pendapatan_diterima else "" }}</td>
+              <td>{{ "{:,.2f}".format(row.penarikan_bulanan) if row.penarikan_bulanan else "" }}</td>
+              <td>{{ "{:,.2f}".format(row.pembelian_tambahan) if row.pembelian_tambahan else "" }}</td>
+              <td>{{ "{:,.2f}".format(row.beli_ulang_diproses) if row.beli_ulang_diproses else "" }}</td>
+              <td>{{ "{:,.2f}".format(row.total_pendapatan) if row.total_pendapatan else "" }}</td>
+              <td class="{% if row.keterangan == 'Pembelian awal belum memenuhi syarat minimum/Silakan tingkatkan pembelian awal sesuai nominal minimum' %}teks-merah{% endif %}">{{ row.keterangan }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+  </main>
+</body>
+</html>

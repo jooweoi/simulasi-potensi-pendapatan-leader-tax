@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Simulasi Potensi Pendapatan</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <main class="layar">
+    <section class="kepala">
+      <div>
+        <h1>Simulasi Potensi Pendapatan</h1>
+        <p class="subjudul">Hitung estimasi pendapatan berdasarkan paket dan strategi yang kamu pilih.</p>
+      </div>
+    </section>
+
+    <form class="kartu formulir" action="{{ url_for('hasil') }}" method="post">
+      <div class="blok-judul">Masukkan Data Simulasi</div>
+
+      <label>
+        <span>Nominal Pembelian Awal</span>
+        <input class="input-rupiah" name="pembelian_awal" type="text" inputmode="numeric" value="{{ "{:,}".format(defaults.pembelian_awal) }}" required>
+      </label>
+
+      <label>
+        <span>Pilih Paket</span>
+        <select name="paket">
+          {% for key, package in packages.items() %}
+            <option value="{{ key }}" {% if key == defaults.paket %}selected{% endif %}>{{ package.label }}</option>
+          {% endfor %}
+        </select>
+      </label>
+
+      <label>
+        <span>Metode Perhitungan</span>
+        <select id="metode_perhitungan" name="metode_perhitungan">
+          <option value="durasi_beli_ulang" {% if defaults.metode_perhitungan == "durasi_beli_ulang" %}selected{% endif %}>Frekuensi Pembelian Ulang</option>
+          <option value="bulan_pencairan_terakhir" {% if defaults.metode_perhitungan == "bulan_pencairan_terakhir" %}selected{% endif %}>Hitung Sampai Pencairan Terakhir</option>
+        </select>
+      </label>
+
+      <label>
+        <span>Tanggal Mulai</span>
+        <input name="tanggal_mulai" type="date" value="{{ defaults.tanggal_mulai }}" required>
+      </label>
+
+      <label>
+        <span>Frekuensi Pembelian Ulang</span>
+        <input id="durasi_beli_ulang" name="durasi_beli_ulang" type="number" min="0" step="1" value="{{ defaults.durasi_beli_ulang }}">
+      </label>
+
+      <label>
+        <span>Hitung Sampai Pencairan Terakhir</span>
+        <input id="bulan_pencairan_terakhir" name="bulan_pencairan_terakhir" type="number" min="0" step="1" value="{{ defaults.bulan_pencairan_terakhir }}">
+      </label>
+
+      <label>
+        <span>Pembelian Tambahan Bulanan</span>
+        <input class="input-rupiah" name="pembelian_tambahan_bulanan" type="text" inputmode="numeric" value="{{ "{:,}".format(defaults.pembelian_tambahan_bulanan) }}">
+      </label>
+
+      <label>
+        <span>Durasi Pembelian Tambahan</span>
+        <input name="durasi_pembelian_tambahan" type="number" min="0" step="1" value="{{ defaults.durasi_pembelian_tambahan }}">
+      </label>
+
+      <label>
+        <span>Penarikan Bulanan</span>
+        <input class="input-rupiah" name="penarikan_bulanan" type="text" inputmode="numeric" value="{{ "{:,}".format(defaults.penarikan_bulanan) }}">
+      </label>
+
+      <div class="aksi">
+        <button type="submit">Mulai Simulasi</button>
+      </div>
+    </form>
+  </main>
+  <script>
+    const metode = document.getElementById("metode_perhitungan");
+    const durasi = document.getElementById("durasi_beli_ulang");
+    const pencairan = document.getElementById("bulan_pencairan_terakhir");
+    const form = document.querySelector(".formulir");
+    const rupiahInputs = Array.from(document.querySelectorAll(".input-rupiah"));
+
+    function hanyaAngka(value) {
+      return value.replace(/[^\d]/g, "");
+    }
+
+    function formatRibuan(value) {
+      const angka = hanyaAngka(value);
+      return angka ? Number(angka).toLocaleString("en-US") : "";
+    }
+
+    rupiahInputs.forEach((input) => {
+      input.value = formatRibuan(input.value);
+      input.addEventListener("input", () => {
+        input.value = formatRibuan(input.value);
+      });
+    });
+
+    function tandaiInput() {
+      durasi.classList.remove("input-merah-muda");
+      pencairan.classList.remove("input-merah-muda");
+
+      if (metode.value === "durasi_beli_ulang") {
+        pencairan.classList.add("input-merah-muda");
+      } else {
+        durasi.classList.add("input-merah-muda");
+      }
+    }
+
+    form.addEventListener("submit", () => {
+      rupiahInputs.forEach((input) => {
+        input.value = hanyaAngka(input.value);
+      });
+    });
+
+    metode.addEventListener("change", tandaiInput);
+    tandaiInput();
+  </script>
+</body>
+</html>

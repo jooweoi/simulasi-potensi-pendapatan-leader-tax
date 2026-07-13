@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Input Komisi Leader</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <main class="layar lebar">
+    <section class="kepala">
+      <div>
+        <h1>Input Komisi Leader</h1>
+        <p class="subjudul">Masukkan data leader dan member level 1.</p>
+      </div>
+      <a class="tombol-tautan" href="{{ url_for('index') }}">Ubah Simulasi</a>
+    </section>
+
+    <form class="kartu formulir-leader" action="{{ url_for('komisi_leader') }}" method="post">
+      {% for key, value in hidden.items() %}
+        <input type="hidden" name="{{ key }}" value="{{ value }}">
+      {% endfor %}
+
+      <div class="blok-judul">Info Leader</div>
+
+      <label>
+        <span>Leader Name</span>
+        <input name="leader_name" type="text" value="{{ defaults.leader_name }}" required>
+      </label>
+
+      <label>
+        <span>Ranking</span>
+        <select name="leader_ranking">
+          {% for key, ranking in rankings.items() %}
+            <option value="{{ key }}" {% if key == defaults.leader_ranking %}selected{% endif %}>{{ ranking.label }}</option>
+          {% endfor %}
+        </select>
+      </label>
+
+      <label>
+        <span>Jumlah Member Level 1</span>
+        <input id="jumlah_member_level_1" name="jumlah_member_level_1" type="number" min="0" max="200" step="1" value="{{ defaults.jumlah_member_level_1 }}" required>
+      </label>
+
+      <div class="member-panel">
+        <div class="member-head">
+          <span>No</span>
+          <span>Member Name</span>
+          <span>Member Ranking</span>
+          <span>Total Active User</span>
+        </div>
+
+        {% for member in members %}
+          <div class="member-row" data-member-row="{{ member.no }}">
+            <span class="nomor">{{ member.no }}</span>
+            <input name="member_name_{{ member.no }}" type="text" value="{{ member.name }}">
+            <select name="member_ranking_{{ member.no }}">
+              {% for key, ranking in rankings.items() %}
+                <option value="{{ key }}" {% if key == member.ranking %}selected{% endif %}>{{ ranking.label }}</option>
+              {% endfor %}
+            </select>
+            <input name="member_active_user_{{ member.no }}" type="number" min="0" step="1" value="{{ member.active_user }}">
+          </div>
+        {% endfor %}
+      </div>
+
+      <div class="aksi">
+        <button type="submit">Hitung Komisi</button>
+      </div>
+    </form>
+  </main>
+  <script>
+    const jumlahMember = document.getElementById("jumlah_member_level_1");
+    const memberRows = Array.from(document.querySelectorAll("[data-member-row]"));
+
+    function tampilkanMemberAktif() {
+      const jumlah = Math.max(0, Math.min(200, Number(jumlahMember.value || 0)));
+      memberRows.forEach((row) => {
+        const nomor = Number(row.dataset.memberRow);
+        row.classList.toggle("tersembunyi", nomor > jumlah);
+      });
+    }
+
+    jumlahMember.addEventListener("input", tampilkanMemberAktif);
+    tampilkanMemberAktif();
+  </script>
+</body>
+</html>
