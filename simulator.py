@@ -218,7 +218,7 @@ def simulate(data: SimulationInput) -> dict[str, Any]:
     total_pembelian_tambahan = sum(row["pembelian_tambahan"] for row in rows)
     total_beli_ulang_diproses = sum(row["beli_ulang_diproses"] for row in rows)
     total_pajak = total_beli_ulang_diproses * TAX_RATE
-    total_pembelian = total_beli_ulang_diproses * TAX_MULTIPLIER
+    total_pembelian = data.pembelian_awal + total_pembelian_tambahan + total_pajak
     kelipatan = total_pendapatan / total_pembelian if total_pembelian else 0.0
     tanggal_mulai_pencairan = data.tanggal_mulai + timedelta(
         days=(durasi_beli_ulang + 1) * DATE_INTERVAL_DAYS
