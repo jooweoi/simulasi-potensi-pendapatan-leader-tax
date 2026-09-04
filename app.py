@@ -63,13 +63,13 @@ def leader_input_from_form(form) -> LeaderInput:
         members.append(
             LeaderMember(
                 name=form.get(f"member_name_{index}", ""),
-                ranking=form.get(f"member_ranking_{index}", "active_user"),
+                ranking=form.get(f"member_ranking_{index}", "rising_creator"),
                 active_user=to_int(form.get(f"member_active_user_{index}", "")),
             )
         )
     return LeaderInput(
         leader_name=form.get("leader_name", "Leader A").strip() or "Leader A",
-        ranking=form.get("leader_ranking", "creative_director"),
+        ranking=form.get("leader_ranking", "executive_agency_director"),
         jumlah_member_level_1=to_int(form.get("jumlah_member_level_1", "")),
         members=members,
     )
@@ -136,7 +136,7 @@ def leader():
         members = default_leader_members()
         defaults = {
             "leader_name": "Leader A",
-            "leader_ranking": "creative_director",
+            "leader_ranking": "executive_agency_director",
             "jumlah_member_level_1": 5,
         }
     return render_template(
