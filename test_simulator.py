@@ -5,6 +5,7 @@ from simulator import LeaderInput, LeaderMember, calculate_leader_commission, ra
 
 class LeaderCommissionTests(unittest.TestCase):
     def test_new_ranking_percentages(self):
+        self.assertEqual(ranking_percent("active_user"), 0.0)
         self.assertEqual(ranking_percent("rising_creator"), 0.05)
         self.assertEqual(ranking_percent("professional_creator"), 0.10)
         self.assertEqual(ranking_percent("senior_creator"), 0.15)
