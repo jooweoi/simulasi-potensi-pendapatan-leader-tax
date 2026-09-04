@@ -32,6 +32,7 @@ DEFAULT_SIMULATION_MONTHS = 120
 MAX_LEADER_MEMBERS = 200
 
 RANKING_RULES = {
+    "active_user": {"label": "ACTIVE USER", "percent": 0.0},
     "rising_creator": {"label": "RISING CREATOR", "percent": 0.05},
     "professional_creator": {"label": "PROFESSIONAL CREATOR", "percent": 0.10},
     "senior_creator": {"label": "SENIOR CREATOR", "percent": 0.15},
@@ -83,11 +84,11 @@ def package_label(package_key: str) -> str:
 
 
 def ranking_label(ranking_key: str) -> str:
-    return RANKING_RULES.get(ranking_key, RANKING_RULES["rising_creator"])["label"]
+    return RANKING_RULES.get(ranking_key, RANKING_RULES["active_user"])["label"]
 
 
 def ranking_percent(ranking_key: str) -> float:
-    return RANKING_RULES.get(ranking_key, RANKING_RULES["rising_creator"])["percent"]
+    return RANKING_RULES.get(ranking_key, RANKING_RULES["active_user"])["percent"]
 
 
 def get_cycle_months(package_key: str) -> int:
@@ -256,7 +257,7 @@ def default_leader_members() -> list[dict[str, Any]]:
             {
                 "no": index,
                 "name": f"Member {index}" if index <= 5 else "",
-                "ranking": "rising_creator",
+                "ranking": "rising_creator" if index <= 5 else "active_user",
                 "active_user": 1 if index <= 5 else 0,
             }
         )
