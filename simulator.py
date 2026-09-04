@@ -32,12 +32,15 @@ DEFAULT_SIMULATION_MONTHS = 120
 MAX_LEADER_MEMBERS = 200
 
 RANKING_RULES = {
-    "active_user": {"label": "Active User", "percent": 0.0},
-    "trainee_creator": {"label": "Trainee Creator", "percent": 0.10},
-    "content_creator": {"label": "Content Creator", "percent": 0.15},
-    "senior_creator": {"label": "Senior Creator", "percent": 0.20},
-    "trainee_creative_director": {"label": "Trainee Creative Director", "percent": 0.25},
-    "creative_director": {"label": "Creative Director", "percent": 0.30},
+    "rising_creator": {"label": "RISING CREATOR", "percent": 0.05},
+    "professional_creator": {"label": "PROFESSIONAL CREATOR", "percent": 0.10},
+    "senior_creator": {"label": "SENIOR CREATOR", "percent": 0.15},
+    "creator_leader": {"label": "CREATOR LEADER", "percent": 0.20},
+    "agency_director": {"label": "AGENCY DIRECTOR", "percent": 0.25},
+    "executive_agency_director": {
+        "label": "EXECUTIVE AGENCY DIRECTOR",
+        "percent": 0.30,
+    },
 }
 
 
@@ -80,11 +83,11 @@ def package_label(package_key: str) -> str:
 
 
 def ranking_label(ranking_key: str) -> str:
-    return RANKING_RULES.get(ranking_key, RANKING_RULES["active_user"])["label"]
+    return RANKING_RULES.get(ranking_key, RANKING_RULES["rising_creator"])["label"]
 
 
 def ranking_percent(ranking_key: str) -> float:
-    return RANKING_RULES.get(ranking_key, RANKING_RULES["active_user"])["percent"]
+    return RANKING_RULES.get(ranking_key, RANKING_RULES["rising_creator"])["percent"]
 
 
 def get_cycle_months(package_key: str) -> int:
@@ -253,7 +256,7 @@ def default_leader_members() -> list[dict[str, Any]]:
             {
                 "no": index,
                 "name": f"Member {index}" if index <= 5 else "",
-                "ranking": "trainee_creator" if index <= 5 else "active_user",
+                "ranking": "rising_creator",
                 "active_user": 1 if index <= 5 else 0,
             }
         )
@@ -281,7 +284,11 @@ def calculate_leader_commission(simulation: dict[str, Any], leader: LeaderInput)
                 needs_review = True
             else:
                 status = "OK"
-                commission_factor += member_active_user * selisih_percent
+                # Each member's first Active User earns the leader's full rank
+                # percentage. Only the remaining Active Users use the rank
+                # differential percentage.
+                commission_factor += leader_percent
+                commission_factor += (member_active_user - 1) * selisih_percent
                 total_active_user += member_active_user
         else:
             status = "Tidak Aktif"
@@ -294,6 +301,10 @@ def calculate_leader_commission(simulation: dict[str, Any], leader: LeaderInput)
                 "active_user": member_active_user,
                 "rank_percent": member_percent,
                 "selisih_percent": selisih_percent if is_active else 0.0,
+                "full_percent_active_user": 1 if is_active and member_active_user > 0 else 0,
+                "differential_active_user": (
+                    member_active_user - 1 if is_active and member_active_user > 0 else 0
+                ),
                 "total_pendapatan_team": 0.0,
                 "komisi_leader": 0.0,
                 "status": status,
@@ -313,7 +324,11 @@ def calculate_leader_commission(simulation: dict[str, Any], leader: LeaderInput)
             if detail["status"] == "OK":
                 detail["total_pendapatan_team"] += pendapatan_per_user * detail["active_user"]
                 detail["komisi_leader"] += (
-                    pendapatan_per_user * detail["active_user"] * detail["selisih_percent"]
+                    pendapatan_per_user
+                    * (
+                        detail["full_percent_active_user"] * leader_percent
+                        + detail["differential_active_user"] * detail["selisih_percent"]
+                    )
                 )
         rows.append(
             {
