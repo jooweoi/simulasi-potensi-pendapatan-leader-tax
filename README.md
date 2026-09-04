@@ -4,6 +4,7 @@ Versi Flask untuk simulasi potensi pendapatan, penarikan bulanan, pajak 6%, dan 
 
 ## Ranking Leader
 
+- Active User: 0%
 - Rising Creator: 5%
 - Professional Creator: 10%
 - Senior Creator: 15%
