@@ -11,7 +11,7 @@
     <section class="kepala">
       <div>
         <h1>Estimasi Komisi Leader</h1>
-        <p class="subjudul">Komisi dihitung berdasarkan pendapatan per user dan selisih ranking.</p>
+        <p class="subjudul">Active User pertama setiap member menggunakan persentase penuh Leader; selebihnya menggunakan selisih ranking.</p>
       </div>
       <div class="aksi-header">
         <form action="{{ url_for('leader') }}" method="post">
@@ -94,6 +94,8 @@
             <th>Total Active User</th>
             <th>Rank %</th>
             <th>Selisih %</th>
+            <th>User × Leader %</th>
+            <th>User × Selisih %</th>
             <th>Komisi Leader</th>
           </tr>
         </thead>
@@ -107,6 +109,8 @@
                 <td>{{ member.active_user }}</td>
                 <td>{{ "{:.0f}%".format(member.rank_percent * 100) }}</td>
                 <td>{{ "{:.0f}%".format(member.selisih_percent * 100) }}</td>
+                <td>{{ member.full_percent_active_user }}</td>
+                <td>{{ member.differential_active_user }}</td>
                 <td>{{ "{:,.2f}".format(member.komisi_leader) if member.komisi_leader else "" }}</td>
               </tr>
             {% endif %}
