@@ -63,7 +63,7 @@ def leader_input_from_form(form) -> LeaderInput:
         members.append(
             LeaderMember(
                 name=form.get(f"member_name_{index}", ""),
-                ranking=form.get(f"member_ranking_{index}", "rising_creator"),
+                ranking=form.get(f"member_ranking_{index}", "active_user"),
                 active_user=to_int(form.get(f"member_active_user_{index}", "")),
             )
         )
